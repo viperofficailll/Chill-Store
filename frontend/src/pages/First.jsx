@@ -49,9 +49,18 @@ const First = () => {
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.5 }}
-          onClick={()=>navigate('/login')}
+          onClick={()=>navigate('/buyerlogin')}
         >
-          Log In
+          Log In as Buyer
+        </motion.button>
+        <motion.button
+          className="px-8 py-3 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-lg"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 2 }}
+          onClick={()=>navigate('/loginseller')}
+        >
+          Log In as Seller
         </motion.button>
       </div>
     </section>

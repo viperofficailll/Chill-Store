@@ -1,12 +1,13 @@
 import jwt from "jsonwebtoken";
-import { Seller } from "../models/seller.model.js";
+import  Seller  from "../models/seller.model.js";
 import bcryptjs from "bcryptjs";
-import Product from "../models/product.model.js";
+import {Product} from "../models/product.model.js";
 
 export const handlesellerRegister = async (req, res) => {
   try {
     const role = "seller";
     const { username, email, password, phone } = req.body;
+    console.log(req.body);
 
     // Check if seller with the same email already exists
     const match = await Seller.findOne({ email });
@@ -36,6 +37,7 @@ export const handlesellerRegister = async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // For production, use HTTPS
       })
+      .status(201)
       .json({ success: true, message: "User created successfully" });
   } catch (error) {
     console.error("Error during registration:", error);
@@ -45,19 +47,33 @@ export const handlesellerRegister = async (req, res) => {
 
 // Placeholder for the unimplemented functions
 export const handlesellerlogin = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await Seller.findOne({ email });
-  if (!user) {
-    return res.status(400).json({ message: "User not found" });
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await Seller.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Compare the provided password with the hashed password in the database
+    const isMatch = await bcryptjs.compare(password, user.password); // Use 'await'
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+
+    // Send the token in a cookie and a success response
+    res
+      .cookie("token", token, { httpOnly: true })
+      .status(200)
+      .json({ success: true, message: "Login successful" });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ error: "Failed to login" });
   }
-  const isMatch = bcryptjs.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid password" });
-  }
-  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-  res
-    .cookie("token", token, { httpOnly: true }) // Correct usage of res.cookie
-    .json({ success: true, message: "Login successful" });
 };
 export const sellergetprofile = () => {};
 export const sellerlogout = () => {};

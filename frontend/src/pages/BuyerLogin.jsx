@@ -1,26 +1,61 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function Login() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+function BuyerLogin() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Simple validation
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields.", { autoClose: 3000 });
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/v1/buyer/login", formData);
+
+      if (response.status === 200) {
+        toast.success("Login successful!", { autoClose: 3000 });
+        setTimeout(() => navigate("/home"), 3000); // Redirect to home
+      }
+    }catch (error) {
+        if (error.response) {
+          // Server responded with a status outside the 2xx range
+          if (error.response.status === 400) {
+            toast.error("Invalid email or password.", { autoClose: 3000 });
+          } else {
+            toast.error(`Error: ${error.response.data.message || "An error occurred."}`, { autoClose: 3000 });
+          }
+        } else if (error.request) {
+          // No response received from the server
+          toast.error("No response from server. Please try again later.", { autoClose: 3000 });
+        } else {
+          // Error occurred while setting up the request
+          toast.error(`Error: ${error.message}`, { autoClose: 3000 });
+        }
+        console.error("Login failed:", error);
+      }
+      
   };
 
   return (
     <section
       className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/login.png')", // Background image from the public folder
-      }}
+      style={{ backgroundImage: "url('/login.png')" }}
     >
       {/* Animated Title */}
       <motion.h2
@@ -39,7 +74,7 @@ function Login() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Email */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -84,8 +119,9 @@ function Login() {
           </motion.button>
         </form>
       </motion.div>
+      <ToastContainer />
     </section>
   );
 }
 
-export default Login;
+export default BuyerLogin;
