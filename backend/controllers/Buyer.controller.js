@@ -76,3 +76,7 @@ export const handlesignup = async (req, res) => {
       res.status(500).json({ error: "Failed to login" });
     }
   };
+  export const buyerallitems = async (req, res) => {
+    
+  };
+  

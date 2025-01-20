@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import Navabar from "../components/Navabar";
+import axios from "axios";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 function AddProduct() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -23,33 +25,47 @@ function AddProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!imageFile) {
+      alert("Please upload an image.");
+      return;
+    }
+
     const data = new FormData();
     data.append("name", formData.name);
     data.append("description", formData.description);
     data.append("price", formData.price);
     data.append("category", formData.category);
-    data.append("image", imageFile); // Append image file
+    data.append("image", imageFile);
 
     try {
-      const response = await fetch("http://localhost:5000/api/products", {
-        method: "POST",
-        body: data,
+      const response = await axios.post("/api/v1/seller/additems", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      if (response.ok) {
+      if (response.status === 201) {
         alert("Product added successfully!");
-      } else {
-        alert("Error adding product.");
+        setFormData({
+          name: "",
+          description: "",
+          price: "",
+          category: "",
+        });
+        setImageFile(null);
+        navigate("/dashboard");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error:", error.response || error);
+      alert(`Error: ${error.response?.data?.message || "Failed to add product."}`);
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navbar */}
-      <Navabar />
+     
 
       {/* Main Content */}
       <main
@@ -66,7 +82,11 @@ function AddProduct() {
             <h1 className="text-3xl font-semibold text-white text-center mb-8">
               Add a New Product
             </h1>
-            <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6"
+              encType="multipart/form-data"
+            >
               {/* Name Field */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">

@@ -13,6 +13,7 @@ import SellerDashboard from "../pages/Sellerdashboard"
 import Addproduct from "../pages/Addproduct"
 import Loginasseller from "../pages/Loginasseller"
 import BuyerLogin from "../pages/BuyerLogin"
+import Selleredititems from "../pages/Selleredititems"
 function Approutes() {
   return (
     
@@ -32,6 +33,7 @@ function Approutes() {
       <Route path="/dashboard"  element={<SellerDashboard></SellerDashboard>} />
       <Route path="/additem"  element={<Addproduct></Addproduct>} />
       <Route path="/buyerlogin"  element={<BuyerLogin></BuyerLogin>} />
+      <Route path="/edit-item/:id"  element={<Selleredititems></Selleredititems>} />
 
 
 

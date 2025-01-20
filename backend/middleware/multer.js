@@ -12,4 +12,4 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Add the upload middleware to your route
-router.post('/seller/add-items', upload.single('image'), selleradditems);
+router.post('/seller/additems', upload.single('image'), selleradditems);
