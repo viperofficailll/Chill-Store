@@ -80,3 +80,6 @@ export const handlesignup = async (req, res) => {
     
   };
   
+  export const profile = async (req, res) => {
+    res.status(200).send({ success: true, message: req.user})
+  }

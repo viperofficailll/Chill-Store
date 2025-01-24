@@ -9,7 +9,7 @@ export const Sellerisauthenticated = async(req, res ,next) =>{
     
 else{
  const decoded = jwt.verify(token,process.env.JWT_SECRET) 
- req.user = await Seller. findById(decoded._id) 
+ req.user = await Seller.findById(decoded._id) 
 
  next () 
 }
