@@ -95,7 +95,7 @@ function SellerDashboard() {
                     <div>
                       <h3 className="text-xl text-white">{item.name}</h3>
                       <p className="text-sm text-gray-400">{item.description}</p>
-                      <p className="text-lg text-teal-400">${item.price}</p>
+                      <p className="text-lg text-teal-400">NPR {item.price}</p>
                     </div>
 
                     <div className="flex space-x-4">

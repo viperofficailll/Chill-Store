@@ -6,34 +6,32 @@ import Card from "../components/Card";
 
 function Home() {
   const [search, setSearch] = useState("");
-  const [products, setProducts] = useState([]);  // Array to hold products
+  const [products, setProducts] = useState([]); // Array to hold products
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Fetch products from the API
   useEffect(() => {
     const fetchProducts = async () => {
-      
-        try {
-          const response = await axios.get("/api/v1/buyer/allitems");
-          console.log("Fetched data:", response.data); // Log the full response for debugging
-      
-          // If the response is an object containing the products array
-          if (Array.isArray(response.data)) {
-            setProducts(response.data);
-          } else if (response.data && response.data.products && Array.isArray(response.data.products)) {
-            setProducts(response.data.products); // If products are inside a "products" field
-          } else {
-            setError("Unexpected response format.");
-            console.error("Unexpected response structure:", response.data);
-          }
-        } catch (err) {
-          setError("Failed to load products.");
-          console.error("Error fetching products:", err);
-        } finally {
-          setLoading(false);
+      setLoading(true); // Start loading
+      setError(null); // Clear previous errors
+      try {
+        const response = await axios.get("/api/v1/buyer/allitems");
+        console.log("Fetched data:", response.data); // Log the response for debugging
+
+        // Handle products based on API response structure
+        if (response.data.products && Array.isArray(response.data.products)) {
+          setProducts(response.data.products); // Assign products array
+        } else {
+          setError("Unexpected response format.");
+          console.error("Unexpected response structure:", response.data);
         }
-      
+      } catch (err) {
+        setError("Failed to load products.");
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false); // Stop loading
+      }
     };
 
     fetchProducts();
@@ -41,7 +39,7 @@ function Home() {
 
   // Filter products based on the search query
   const filteredProducts = products.filter((product) =>
-    product.name && product.name.toLowerCase().includes(search.toLowerCase()) // Check if name exists
+    product.name && product.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -50,7 +48,10 @@ function Home() {
       <Navabar />
 
       {/* Main Content */}
-      <main className="flex-grow bg-cover bg-center" style={{ backgroundImage: "url('/bg.png')" }}>
+      <main
+        className="flex-grow bg-cover bg-center"
+        style={{ backgroundImage: "url('/bg.png')" }}
+      >
         <div className="flex flex-col items-center justify-center py-20">
           {/* Search Bar */}
           <div className="mb-12 w-3/4 max-w-lg">
@@ -67,50 +68,35 @@ function Home() {
           {loading && <div className="text-white">Loading...</div>}
           {error && <div className="text-white">{error}</div>}
 
-          {/* Display All Products Below Search Bar */}
+          {/* Display Products */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl px-4">
             {products.length > 0 ? (
-              products.map((product) => (
-                <Card
-                  key={product._id}  // Use _id as key for better performance
-                  title={product.name}
-                  description={product.description}
-                  price={product.price}
-                  category={product.category}
-                  image={`http://localhost:5000/api/uploads/${product.image.replace(/\\/g, '/')}`} // Fixed image path for frontend
-                />
-              ))
+              filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <Card
+                    key={product._id} // Use _id as the unique key
+                    title={product.name}
+                    description={product.description}
+                    price={product.price}
+                    image={`http://localhost:5000/api/${product.image.replace(
+                      /\\/g,
+                      "/"
+                    )}`} // Fix image path for frontend
+                  />
+                ))
+              ) : (
+                <div className="text-white text-center col-span-full">
+                  No results found.
+                </div>
+              )
             ) : (
-              <div className="text-white text-center col-span-full">
-                No products available.
-              </div>
+              !loading && (
+                <div className="text-white text-center col-span-full">
+                  No products available.
+                </div>
+              )
             )}
           </div>
-
-          {/* Cards Section After Search Filter */}
-          {search && (
-            <div className="mt-8 w-full max-w-6xl px-4">
-              <h2 className="text-white text-xl font-semibold mb-4">Search Results:</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {filteredProducts.length > 0 ? (
-                  filteredProducts.map((product) => (
-                    <Card
-                      key={product._id}  // Use _id as key for better performance
-                      title={product.name}
-                      description={product.description}
-                      price={product.price}
-                      category={product.category}
-                      image={`http://localhost:5000/api/uploads/${product.image.replace(/\\/g, '/')}`} // Fixed image path for frontend
-                    />
-                  ))
-                ) : (
-                  <div className="text-white text-center col-span-full">
-                    No results found.
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </main>
 
