@@ -14,6 +14,8 @@ import Addproduct from "../pages/Addproduct"
 import Loginasseller from "../pages/Loginasseller"
 import BuyerLogin from "../pages/BuyerLogin"
 import Selleredititems from "../pages/Selleredititems"
+import ProductDetails from "../pages/ProductDetails"
+
 function Approutes() {
   return (
     
@@ -34,6 +36,7 @@ function Approutes() {
       <Route path="/additem"  element={<Addproduct></Addproduct>} />
       <Route path="/buyerlogin"  element={<BuyerLogin></BuyerLogin>} />
       <Route path="/edit-item/:id"  element={<Selleredititems></Selleredititems>} />
+      <Route path="/productdetails/:id"  element={<ProductDetails></ProductDetails>} />
 
 
 

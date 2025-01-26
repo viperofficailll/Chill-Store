@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import axios from "axios";
 import Navabar from "../components/Navabar";
 import Footer from "../components/Footer";
@@ -73,16 +74,20 @@ function Home() {
             {products.length > 0 ? (
               filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
-                  <Card
+                  <Link
+                    to={`/productdetails/${product._id}`} // Link to ProductDetails page with product ID
                     key={product._id} // Use _id as the unique key
-                    title={product.name}
-                    description={product.description}
-                    price={product.price}
-                    image={`http://localhost:5000/api/${product.image.replace(
-                      /\\/g,
-                      "/"
-                    )}`} // Fix image path for frontend
-                  />
+                  >
+                    <Card
+                      title={product.name}
+                      description={product.description}
+                      price={product.price}
+                      image={`http://localhost:5000/api/${product.image.replace(
+                        /\\/g,
+                        "/"
+                      )}`} // Fix image path for frontend
+                    />
+                  </Link>
                 ))
               ) : (
                 <div className="text-white text-center col-span-full">
