@@ -82,10 +82,9 @@ function Home() {
                       title={product.name}
                       description={product.description}
                       price={product.price}
-                      image={`http://localhost:5000/api/${product.image.replace(
-                        /\\/g,
-                        "/"
-                      )}`} // Fix image path for frontend
+                      image={`http://localhost:4000/${product.image.replace(/\\/g, "/")}`}
+
+
                     />
                   </Link>
                 ))

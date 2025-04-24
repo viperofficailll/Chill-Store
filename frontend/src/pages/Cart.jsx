@@ -115,7 +115,7 @@ function Cart() {
                   <li key={item._id} className="flex justify-between items-center text-white">
                     <div className="flex items-center">
                       <img
-                        src={`http://localhost:5000/api/${item.image.replace(/\\/g, "/")}`}
+                        src={`http://localhost:4000/${item.image.replace(/\\/g, "/")}`}
                         alt={item.name}
                         className="w-12 h-12 rounded-md mr-4"
                       />

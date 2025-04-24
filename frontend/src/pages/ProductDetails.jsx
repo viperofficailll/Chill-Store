@@ -56,10 +56,7 @@ function ProductDetails() {
           {!loading && !error && product && (
             <div className="bg-gray-800 rounded-lg shadow-lg p-6 text-white max-w-3xl w-full">
               <img
-                src={`http://localhost:5000/api/${product.image.replace(
-                  /\\/g,
-                  "/"
-                )}`}
+                src={`http://localhost:4000/${product.image.replace(/\\/g, "/")}`}
                 alt={product.name}
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />
