@@ -116,7 +116,7 @@ export const selleradditems = async (req, res) => {
         price,
         category,
         image: req.file.path, // Multer saves the file path here
-        seller: req.user?.id, // Assuming seller info is attached to req.user
+        seller: req.user._id, // Assuming seller info is attached to req.user
       });
 
       // Save the new product to the database
@@ -165,9 +165,46 @@ export const delteproduct = async (req, res) => {
   }
 };
 
+import Order from "../models/orders.model.js";
 
+export const sellerorders = async (req, res) => {
+  try {
+    const sellerId = req.user._id;
 
+    // Fetch all orders containing items sold by this seller
+    const orders = await Order.find({ "items.seller": sellerId })
+      .populate("buyer", "username email phone deliverylocation") // Include buyer details
+      .populate("items.product", "name image") // Include product details
+      .sort({ orderedAt: -1 }); // Sort by latest order
 
+    // Extract only the items belonging to this seller
+    const filteredOrders = orders.map((order) => {
+      const sellerItems = order.items.filter(
+        (item) => item.seller.toString() === sellerId.toString()
+      );
+
+      const totalAmount = sellerItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+
+      return {
+        _id: order._id,
+        buyer: order.buyer,
+        items: sellerItems,
+        totalAmount,
+        paymentMethod: order.paymentMethod,
+        orderStatus: order.orderStatus,
+        orderedAt: order.orderedAt,
+      };
+    });
+
+    res.status(200).json({ orders: filteredOrders });
+  } catch (error) {
+    console.error("Error fetching seller orders:", error);
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+};
 
 
 // Update product details handler

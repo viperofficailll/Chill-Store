@@ -11,26 +11,27 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch cart item details using their IDs
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
         const quantityMap = {};
-        cartItemIds.forEach((id) => {
+        cartItemIds.forEach(id => {
           quantityMap[id] = (quantityMap[id] || 0) + 1;
         });
 
         const uniqueIds = [...new Set(cartItemIds)];
-        const items = [];
+        const fetchedItems = [];
 
-        for (let id of uniqueIds) {
+        for (const id of uniqueIds) {
           const res = await axios.get(`/api/v1/buyer/productdetails/${id}`);
-          items.push({ ...res.data.product, quantity: quantityMap[id] });
+          fetchedItems.push({ ...res.data.product, quantity: quantityMap[id] });
         }
 
-        setCartItems(items);
-        setNoOfItemsInCart(cartItemIds.length);  // Update the number of items in the cart
+        setCartItems(fetchedItems);
+        setNoOfItemsInCart(cartItemIds.length);
       } catch (error) {
-        console.error("Error fetching cart items:", error);
+        console.error("Error loading cart items:", error);
       } finally {
         setLoading(false);
       }
@@ -41,33 +42,61 @@ function Cart() {
     } else {
       setCartItems([]);
       setLoading(false);
-      setNoOfItemsInCart(0);  // Ensure count is reset when cart is empty
+      setNoOfItemsInCart(0);
     }
   }, [cartItemIds, setNoOfItemsInCart]);
 
-  const handleRemoveOneQuantity = (idToRemove) => {
+  const handleRemoveOne = (idToRemove) => {
     const index = cartItemIds.indexOf(idToRemove);
     if (index !== -1) {
-      const updated = [...cartItemIds];
-      updated.splice(index, 1);
-      setCartItemIds(updated);
-      setNoOfItemsInCart(updated.length);  // Update the number of items in the cart after removal
+      const updatedCart = [...cartItemIds];
+      updatedCart.splice(index, 1);
+      setCartItemIds(updatedCart);
+      setNoOfItemsInCart(updatedCart.length);
     }
   };
 
   const handleClearCart = () => {
     setCartItemIds([]);
-    setNoOfItemsInCart(0);  // Reset the number of items when clearing the cart
+    setNoOfItemsInCart(0);
   };
 
   const totalPrice = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const handleOrder = async () => {
+    try {
+      const orderData = {
+        items: cartItems.map(item => ({
+          product: item._id,
+          quantity: item.quantity,
+          price: item.price,
+          
+        })),
+        totalAmount: totalPrice,
+        paymentMethod: "Esewa",
+      };
+
+      const res = await axios.post("/api/v1/buyer/order", orderData);
+
+      if (res.status === 201) {
+        alert("Order placed successfully!");
+        handleClearCart();
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Order failed:", error);
+      alert("Failed to place order. Try again later.");
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
+
       <main
         className="flex-grow bg-cover bg-center"
         style={{ backgroundImage: "url('/cart.png')" }}
@@ -83,16 +112,10 @@ function Cart() {
             <>
               <ul className="bg-gray-800 bg-opacity-90 p-6 rounded-lg shadow-lg max-w-4xl mx-auto space-y-4">
                 {cartItems.map((item) => (
-                  <li
-                    key={item._id}
-                    className="flex justify-between items-center text-white"
-                  >
+                  <li key={item._id} className="flex justify-between items-center text-white">
                     <div className="flex items-center">
                       <img
-                        src={`http://localhost:5000/api/${item.image.replace(
-                          /\\/g,
-                          "/"
-                        )}`}
+                        src={`http://localhost:5000/api/${item.image.replace(/\\/g, "/")}`}
                         alt={item.name}
                         className="w-12 h-12 rounded-md mr-4"
                       />
@@ -111,7 +134,7 @@ function Cart() {
                         NPR. {(item.price * item.quantity).toFixed(2)}
                       </p>
                       <button
-                        onClick={() => handleRemoveOneQuantity(item._id)}
+                        onClick={() => handleRemoveOne(item._id)}
                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-400 transition"
                       >
                         Remove
@@ -129,7 +152,10 @@ function Cart() {
               </div>
 
               <div className="flex justify-center gap-4 mt-8">
-                <button className="px-6 py-2 bg-teal-500 text-black font-semibold rounded-md hover:bg-teal-400 transition">
+                <button
+                  onClick={handleOrder}
+                  className="px-6 py-2 bg-teal-500 text-black font-semibold rounded-md hover:bg-teal-400 transition"
+                >
                   Pay with Esewa
                 </button>
                 <button
@@ -141,12 +167,11 @@ function Cart() {
               </div>
             </>
           ) : (
-            <div className="text-center text-white mt-20">
-              Your cart is empty.
-            </div>
+            <div className="text-center text-white mt-20">Your cart is empty.</div>
           )}
         </div>
       </main>
+
       <Footer />
     </div>
   );

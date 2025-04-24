@@ -1,4 +1,4 @@
-import { delteproduct, updateProduct, getSellerItems, handlesellerlogin, handlesellerRegister, selleradditems, sellergetprofile, sellerlogout, getProductDetails } from "../controllers/seller.controller.js";
+import { delteproduct, updateProduct, getSellerItems, handlesellerlogin, handlesellerRegister, selleradditems, sellergetprofile, sellerlogout, getProductDetails, sellerorders } from "../controllers/seller.controller.js";
 import express from "express";
 import {  Sellerisauthenticated } from "../middleware/SellerisAuthenticated.js";
  export const sellerRouter = express.Router();
@@ -17,3 +17,4 @@ sellerRouter.delete("/items/:id", Sellerisauthenticated, delteproduct);
 // Backend: Routes
 sellerRouter.get("/items/:id", Sellerisauthenticated, getProductDetails);
 sellerRouter.put("/items/:id", Sellerisauthenticated, updateProduct);
+sellerRouter.get('/orders',Sellerisauthenticated,sellerorders)

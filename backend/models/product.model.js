@@ -22,7 +22,8 @@ const ProductSchema = mongoose.Schema({
     },
     seller: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Seller'
+        ref: 'Seller',
+        required: true
     }
 },{timestamps: true});
 

@@ -15,6 +15,11 @@ const buyerSchema = new mongoose.Schema({
         enum: ['seller', 'buyer'],
        
     },
+    deliverylocation:{
+        type: String,
+        required:true
+
+    },
 
     phone:{
         type: String,

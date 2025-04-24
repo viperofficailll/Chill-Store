@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 
 function Profile() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [user, setUser] = useState(null); // Store user data
   const [loading, setLoading] = useState(true); // Loading state
 
@@ -13,7 +13,7 @@ function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get("/api/v1/buyer/profile"); // No authorization required
+        const response = await axios.get("/api/v1/buyer/profile");
         setUser(response.data.message); // Set the user data
       } catch (err) {
         console.error("Error fetching profile data:", err);
@@ -30,8 +30,7 @@ function Profile() {
   };
 
   const handleLogout = () => {
-    navigate('/')
-    
+    navigate('/');
   };
 
   if (loading) {
@@ -77,6 +76,9 @@ function Profile() {
               </li>
               <li className="mb-2">
                 <strong>Phone:</strong> {user?.phone || "N/A"}
+              </li>
+              <li className="mb-2">
+                <strong>Delivery Location:</strong> {user?.deliverylocation || "Not Provided"}
               </li>
             </ul>
           </div>

@@ -12,6 +12,7 @@ const BuyerSignup = () => {
     email: "",
     phone: "",
     password: "",
+    deliveryLocation: "", // Added deliveryLocation to the state
   });
 
   // Handle input changes
@@ -28,7 +29,7 @@ const BuyerSignup = () => {
     e.preventDefault();
 
     // Simple validation
-    if (!formData.username || !formData.email || !formData.phone || !formData.password) {
+    if (!formData.username || !formData.email || !formData.phone || !formData.password || !formData.deliveryLocation) {
       toast.error("Please fill in all fields.");
       return;
     }
@@ -137,13 +138,29 @@ const BuyerSignup = () => {
             />
           </motion.div>
 
+          {/* Delivery Location */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.6 }}
+          >
+            <input
+              type="text"
+              name="deliveryLocation"
+              value={formData.deliveryLocation}
+              onChange={handleChange}
+              placeholder="Delivery Location"
+              className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none"
+            />
+          </motion.div>
+
           {/* Submit Button */}
           <motion.button
             type="submit"
             className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.6 }}
+            transition={{ duration: 1, delay: 0.7 }}
           >
             Sign Up
           </motion.button>

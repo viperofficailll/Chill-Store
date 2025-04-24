@@ -3,13 +3,14 @@ import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import {Product} from "../models/product.model.js";
 import Buyer from "../models/buyer.model.js";
+import Order from "../models/orders.model.js";
 
 
 
 export const handlesignup = async (req, res) => {
     try {
       const role = "buyer";
-      const { username, email, password, phone } = req.body;
+      const { username, email, password, phone ,deliveryLocation} = req.body;
       console.log(req.body);
   
       // Check if Buyer with the same email already exists
@@ -29,6 +30,7 @@ export const handlesignup = async (req, res) => {
         password: hashedPassword,
         phone,
         role,
+        deliverylocation:deliveryLocation,
       });
   
       // Generate a JWT token
@@ -96,3 +98,60 @@ export const handlesignup = async (req, res) => {
       res.status(500).json({ message: "Failed to fetch product details" });
     }
   }
+
+
+  export const orderhandeler = async (req, res) => {
+    try {
+      const buyer = req.user._id;
+      const { items, totalAmount, paymentMethod } = req.body;
+  
+      // Basic input validation
+      if (!buyer || !items || !Array.isArray(items) || items.length === 0 || !totalAmount) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+  
+      // Fetch product data and build full items array
+      const fullItems = await Promise.all(
+        items.map(async (item, index) => {
+          const productData = await Product.findById(item.product);
+  
+          if (!productData) {
+            throw new Error(`Product with ID ${item.product} not found (item index: ${index})`);
+          }
+  
+          if (!productData.seller) {
+            throw new Error(`Seller not found for product ID ${item.product} (item index: ${index})`);
+          }
+  
+          return {
+            product: item.product,
+            quantity: item.quantity,
+            price: item.price,
+            seller: productData.seller, // ensure this is populated in your Product model!
+          };
+        })
+      );
+  
+      // Create the order
+      const order = await Order.create({
+        buyer,
+        items: fullItems,
+        totalAmount,
+        paymentMethod: paymentMethod || "Esewa",
+      });
+  
+      res.status(201).json({
+        success: true,
+        message: "Order placed successfully",
+        order,
+      });
+  
+    } catch (error) {
+      console.error("Order creation failed:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Internal server error",
+      });
+    }
+  };
+  
