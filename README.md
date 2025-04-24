@@ -1,23 +1,55 @@
-# eCommerce Marketplace
-An online marketplace platform where users can buy and sell products. This platform provides a seamless experience for buyers to browse items and make purchases, while sellers can list products, manage their inventory, and handle orders. The platform supports fixed-price listings and secure payment methods for a convenient and dynamic shopping experience.
+# Chill-Store 🛒
 
-# Overview
-Welcome to our eCommerce Marketplace! Whether you're a buyer looking for great deals or a seller wanting to showcase your products, this platform offers everything you need to make buying and selling simple and secure. The marketplace connects buyers and sellers across various categories, allowing for an easy and flexible shopping experience.
+Welcome to **Chill-Store**, an e-commerce platform built for a smooth and modern shopping experience. This project includes both frontend and backend implementations, supporting product listings, image uploads, and payment processing via eSewa.
 
-# Key Features
-## For Buyers:
-* Browse Products: Search through a wide range of categories, such as electronics, fashion, home goods, collectibles, and more.
-* Fixed-Price Listings: Buy products at fixed prices directly from sellers.
-* Secure Payments: Pay for your purchases securely using Stripe or other integrated payment methods.
-* User Profiles: Create and manage your profile, track orders, and view your purchase history.
-* Search & Filters: Easily find products by using search terms and applying filters like category, price range, location, and more.
-* Ratings & Reviews: Rate sellers and leave feedback on products to help future buyers make informed decisions.
-* Shipping & Tracking: Integrated shipping and order tracking options for both domestic and international orders.
-## For Sellers:
-* Product Listings: Easily list products for sale with detailed descriptions, images, and pricing.
-* Inventory Management: Manage your inventory levels, update stock, and handle product availability.
-* Order Management: View and manage orders, update shipping information, and process returns and refunds.
-* Seller Dashboard: Monitor your sales, manage listings, and analyze performance through a simple and intuitive dashboard.
-## Additional Features:
-* User Authentication: Secure login and registration process for both buyers and sellers.
-* Messaging: Communicate with sellers directly to ask questions about products or shipping
+---
+
+## 🔧 Tech Stack
+
+### Frontend:
+- **React** – for building a responsive UI
+- **Tailwind CSS** – for modern, utility-first styling
+- **Recoil** – for state management
+
+### Backend:
+- **Node.js** – runtime environment
+- **Express** – web framework for handling routes and API logic
+- **Multer** – for handling file uploads (images)
+- **MongoDB** – NoSQL database to store products and user data
+
+### Payments:
+- **eSewa** – integrated as the payment gateway
+
+---
+
+## 🖼️ Screenshots
+
+Below are some previews of the Chill-Store interface:
+
+1. ![Landing Page](./screenshots/first.png)
+2. ![Login Page](./screenshots/second.png)
+3. ![Seller Dashboard](./screenshots/third.png)
+4. ![Home Page](./screenshots/home.png)
+5. ![Profile](./screenshots/profile.png)
+6. ![Cart ](./screenshots/cart.png)
+
+
+
+## 🚀 Features
+
+- Product browsing and filtering
+- User authentication
+- Add to cart & checkout flow
+- Image upload for product listings (via Multer)
+- eSewa payment integration
+- Fully responsive design with Tailwind
+
+---
+
+## 📦 Setup Instructions
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/viperofficailll/Chill-Store.git
+   cd Chill-Store
