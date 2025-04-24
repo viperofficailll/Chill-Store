@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import PropTypes from "prop-types";
 import axios from "axios";
-import Navabar from "../components/Navabar";
+import Navbar from "../components/Navabar";
 import Footer from "../components/Footer";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { itemsincart, noofitemsincart } from "../store/atom";
 
-function ProductDetails({ cartItems = [], setCartItems }) {
+function ProductDetails() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const currentCartItems = useRecoilValue(itemsincart);
+  const setItemsInCart = useSetRecoilState(itemsincart);
+  const setNoOfItemsInCart = useSetRecoilState(noofitemsincart);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -30,37 +35,16 @@ function ProductDetails({ cartItems = [], setCartItems }) {
   }, [id]);
 
   const handleAddToCart = () => {
-    if (!product) return; // Ensure product is available
-
-    const existingItem = cartItems.find((item) => item.id === product._id);
-    if (existingItem) {
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === product._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      setCartItems([
-        ...cartItems,
-        {
-          id: product._id,
-          name: product.name,
-          price: product.price,
-          image: `http://localhost:5000/api/${product.image.replace(
-            /\\/g,
-            "/"
-          )}`,
-          quantity: 1,
-        },
-      ]);
-    }
+    
+      setItemsInCart([...currentCartItems, id]);
+      setNoOfItemsInCart((prevCount) => prevCount + 1);
+      console.log(itemsincart)
+    
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navabar />
+      <Navbar />
 
       <main
         className="flex-grow bg-cover bg-center"
@@ -82,7 +66,7 @@ function ProductDetails({ cartItems = [], setCartItems }) {
               <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
               <p className="text-gray-400 mb-4">{product.description}</p>
               <div className="text-lg font-semibold mb-6">
-                Price: NPR.{product.price}
+                Price: NPR. {product.price}
               </div>
               <button
                 onClick={handleAddToCart}
@@ -99,18 +83,5 @@ function ProductDetails({ cartItems = [], setCartItems }) {
     </div>
   );
 }
-
-ProductDetails.propTypes = {
-  cartItems: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired,
-      price: PropTypes.number.isRequired,
-      image: PropTypes.string.isRequired,
-      quantity: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-  setCartItems: PropTypes.func.isRequired,
-};
 
 export default ProductDetails;

@@ -1,8 +1,10 @@
-import PropTypes from 'prop-types';
 import { NavLink, useNavigate } from "react-router-dom";
+import {useRecoilValue} from 'recoil'
+import { noofitemsincart } from "../store/atom";
 
-function Navbar({ cartItemCount = 0 }) {
+function Navbar() {
   const navigate = useNavigate();
+const noofitemsincartfinal = useRecoilValue(noofitemsincart)
 
   return (
     <nav className="bg-black bg-opacity-80 text-white fixed top-0 left-0 w-full z-50 shadow-lg">
@@ -53,7 +55,7 @@ function Navbar({ cartItemCount = 0 }) {
               className="px-4 py-2 bg-teal-500 text-black font-semibold rounded-md hover:bg-teal-400 transition"
               onClick={() => navigate('/cart')}
             >
-              Cart ({cartItemCount})
+              Cart ({noofitemsincartfinal})
             </button>
 
             {/* Profile Button */}
@@ -93,9 +95,7 @@ function Navbar({ cartItemCount = 0 }) {
   );
 }
 
-// Prop validation
-Navbar.propTypes = {
-  cartItemCount: PropTypes.number, // cartItemCount should be a number
-};
+
+
 
 export default Navbar;
