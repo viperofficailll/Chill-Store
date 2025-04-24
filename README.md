@@ -1,6 +1,6 @@
 # Chill-Store 🛒
 
-Welcome to **Chill-Store**, an e-commerce platform built for a smooth and modern shopping experience. This project includes both frontend and backend implementations, supporting product listings, image uploads, and payment processing via eSewa.
+Welcome to **Chill-Store**, an e-commerce platform built for a smooth and modern shopping experience. This project includes both frontend and backend implementations, supporting product listings, image uploads, and payment processing via **eSewa**.
 
 ---
 
@@ -22,27 +22,36 @@ Welcome to **Chill-Store**, an e-commerce platform built for a smooth and modern
 
 ---
 
-## 🖼️ Screenshots
+## 📸 Screenshots
 
-Below are some previews of the Chill-Store interface:
+### 1. Landing Page  
+![Landing Page](screenshots/first.png)
 
-1. ![Landing Page](./screenshots/first.png)
-2. ![Login Page](./screenshots/second.png)
-3. ![Seller Dashboard](./screenshots/third.png)
-4. ![Home Page](./screenshots/home.png)
-5. ![Profile](./screenshots/profile.png)
-6. ![Cart ](./screenshots/cart.png)
+### 2. Login Page  
+![Login Page](screenshots/second.png)
 
+### 3. Seller Dashboard  
+![Seller Dashboard](screenshots/third.png)
 
+### 4. Home Page  
+![Home Page](screenshots/home.png)
+
+### 5. Profile Page  
+![Profile Page](screenshots/profile.png)
+
+### 6. Cart Page  
+![Cart Page](screenshots/cart.png)
+
+---
 
 ## 🚀 Features
 
-- Product browsing and filtering
-- User authentication
-- Add to cart & checkout flow
-- Image upload for product listings (via Multer)
-- eSewa payment integration
-- Fully responsive design with Tailwind
+- Product browsing and filtering  
+- User authentication  
+- Add to cart & checkout flow  
+- Image upload for product listings (via Multer)  
+- eSewa payment integration  
+- Fully responsive design with Tailwind  
 
 ---
 
