@@ -15,6 +15,9 @@ import Loginasseller from "../pages/Loginasseller"
 import BuyerLogin from "../pages/BuyerLogin"
 import Selleredititems from "../pages/Selleredititems"
 import ProductDetails from "../pages/ProductDetails"
+import Success from "../Payment/Success"
+import Failure from "../Payment/Failure"
+import Payment from "../Payment/Payment"
 
 function Approutes() {
   return (
@@ -37,6 +40,10 @@ function Approutes() {
       <Route path="/buyerlogin"  element={<BuyerLogin></BuyerLogin>} />
       <Route path="/edit-item/:id"  element={<Selleredititems></Selleredititems>} />
       <Route path="/productdetails/:id"  element={<ProductDetails></ProductDetails>} />
+      <Route path="/success"  element={<Success></Success>} />
+       <Route path="/failure"  element={<Failure></Failure>} />
+       <Route path="/payment"  element={<Payment/>} />
+      
 
 
 
