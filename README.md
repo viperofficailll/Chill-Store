@@ -42,6 +42,22 @@ Welcome to **Chill-Store**, an e-commerce platform built for a smooth and modern
 ### 6. Cart Page  
 ![Cart Page](screenshots/cart.png)
 
+### 7. Esewa Payment
+![esewa](screenshots/paywithesewa.png)
+
+### 8. Payment success
+![esewa](screenshots/success.png)
+
+### 9. Redirection after success
+![esewa](screenshots/redirectingaftersuccess.png)
+
+### 10. Payment failure
+![esewa](screenshots/failed.png)
+
+### 11. Redirection after failure
+![esewa](screenshots/redirectafterfailure.png)
+
+
 ---
 
 ## 🚀 Features
