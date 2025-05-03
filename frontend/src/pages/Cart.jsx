@@ -4,8 +4,10 @@ import Navbar from "../components/Navabar";
 import Footer from "../components/Footer";
 import axios from "axios";
 import { itemsincart, noofitemsincart } from "../store/atom";
+import { useNavigate  } from "react-router-dom";
 
 function Cart() {
+  const navigate = useNavigate();
   const [cartItemIds, setCartItemIds] = useRecoilState(itemsincart);
   const [noOfItemsInCart, setNoOfItemsInCart] = useRecoilState(noofitemsincart);
   const [cartItems, setCartItems] = useState([]);
@@ -84,7 +86,9 @@ function Cart() {
       if (res.status === 201) {
         alert("Order placed successfully!");
         handleClearCart();
-      } else {
+        navigate('/payment', { state: { totalAmount: totalPrice } });
+      }
+       else {
         alert("Something went wrong. Please try again.");
       }
     } catch (error) {
