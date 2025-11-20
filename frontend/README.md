@@ -26,8 +26,8 @@ Welcome to **Chill-Store**, an e-commerce platform built for a smooth and modern
 
 Below are some previews of the Chill-Store interface:
 
-1. ![Landing Page](./screenshots/first.png)
-2. ![Login Page](./screenshots/second.png)
+1. ![Landing Page](./screenshots/aafirst.png)
+2. ![Login Page](./screenshots/aasecond.png)
 3. ![Seller Dashboard](./screenshots/third.png)
 4. ![Home Page](./screenshots/home.png)
 5. ![Profile](./screenshots/profile.png)

@@ -10,8 +10,8 @@ function Contact() {
 
       {/* Main Content */}
       <main
-        className="flex-grow bg-cover bg-center"
-        style={{ backgroundImage: "url('/profile.png')" }}
+        className="flex-grow bg-gray-900 bg-center"
+       
       >
         <div className="flex flex-col items-center justify-center py-20 px-8">
           <motion.div

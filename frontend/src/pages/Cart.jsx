@@ -102,8 +102,8 @@ function Cart() {
       <Navbar />
 
       <main
-        className="flex-grow bg-cover bg-center"
-        style={{ backgroundImage: "url('/cart.png')" }}
+        className="flex-grow bg-gray-900 bg-center"
+      
       >
         <div className="py-20 px-8">
           <h1 className="text-3xl font-semibold text-center text-white mb-8">

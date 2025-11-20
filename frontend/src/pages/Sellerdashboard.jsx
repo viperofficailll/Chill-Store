@@ -3,24 +3,53 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import axios from "axios";
 
+// Chart.js imports
+import { Line, Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
+
 function SellerDashboard() {
   const navigate = useNavigate();
-  
-  // States for items, orders, and loading states
+
   const [items, setItems] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch items and orders from backend
+  // -----------------------------
+  // Fetch Items & Orders
+  // -----------------------------
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await axios.get("/api/v1/seller/allitems");
-        setItems(response.data.items || []);
+        const res = await axios.get("/api/v1/seller/allitems");
+        setItems(res.data.items || []);
       } catch (err) {
-        console.error("Error fetching items:", err);
         setError("Failed to fetch items.");
       } finally {
         setLoadingItems(false);
@@ -29,10 +58,9 @@ function SellerDashboard() {
 
     const fetchOrders = async () => {
       try {
-        const response = await axios.get("/api/v1/seller/orders");
-        setOrders(response.data.orders || []);
+        const res = await axios.get("/api/v1/seller/orders");
+        setOrders(res.data.orders || []);
       } catch (err) {
-        console.error("Error fetching orders:", err);
         setError("Failed to fetch orders.");
       } finally {
         setLoadingOrders(false);
@@ -43,161 +71,278 @@ function SellerDashboard() {
     fetchOrders();
   }, []);
 
-  // Handle item removal
+  // -----------------------------
+  // Item Handlers
+  // -----------------------------
   const handleRemoveItem = async (id) => {
     try {
-      const response = await axios.delete(`/api/v1/seller/items/${id}`);
-      alert(response.data.message);
-      setItems((prevItems) => prevItems.filter((item) => item._id !== id));
+      const res = await axios.delete(`/api/v1/seller/items/${id}`);
+      alert(res.data.message);
+      setItems((prev) => prev.filter((item) => item._id !== id));
     } catch (err) {
-      console.error("Error removing item:", err);
       alert(err.response?.data?.message || "Failed to remove the item.");
     }
   };
 
-  // Navigate to edit item page
-  const handleEditItem = (id) => {
-    navigate(`/edit-item/${id}`);
+  const handleEditItem = (id) => navigate(`/edit-item/${id}`);
+
+  const handleLogout = () => {
+    document.cookie = "token=; Max-Age=0; path=/";
+    navigate("/");
   };
 
-  // Logout function
-  const handleLogout = () => {
-    document.cookie = "token=; Max-Age=0; path=/"; // Clears the cookie
-    navigate("/"); // Redirect to homepage
+  // -----------------------------
+  // Chart Data
+  // -----------------------------
+  const lineData = {
+    labels: orders.map((_, i) => `Order ${i + 1}`),
+    datasets: [
+      {
+        label: "Order Amount (NPR)",
+        data: orders.map((o) => o.totalAmount),
+        borderColor: "rgba(14,165,233,1)",
+        backgroundColor: "rgba(14,165,233,0.3)",
+        tension: 0.3,
+        fill: true,
+      },
+    ],
+  };
+
+  const barData = {
+    labels: items.map((item) => item.name),
+    datasets: [
+      {
+        label: "Item Price (NPR)",
+        data: items.map((item) => item.price),
+        backgroundColor: "rgba(34,197,94,0.7)",
+        borderColor: "rgba(34,197,94,1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const paymentCounts = orders.reduce((acc, order) => {
+    const method = order.paymentMethod || "Unknown";
+    acc[method] = (acc[method] || 0) + 1;
+    return acc;
+  }, {});
+
+  const pieData = {
+    labels: Object.keys(paymentCounts),
+    datasets: [
+      {
+        label: "Payment Methods",
+        data: Object.values(paymentCounts),
+        backgroundColor: ["#34D399", "#3B82F6", "#FBBF24", "#F87171"],
+      },
+    ],
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Navbar with Logout Button */}
-      <div className="flex justify-between items-center py-4 px-8">
-        <h1 className="text-3xl font-semibold text-white">Seller Dashboard</h1>
-      </div>
+    <div className="flex min-h-screen bg-gray-900 text-white">
+      {/* ------------------ Sidebar ------------------ */}
+      <aside className="w-64 bg-gray-800 p-6 flex flex-col justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-8">Seller Panel</h2>
 
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        className="px-6 py-3 bg-red-500 text-white font-semibold rounded-md hover:bg-red-400 transition"
-      >
-        Logout
-      </button>
-
-      {/* Main Content */}
-      <main
-        className="flex-grow bg-cover bg-center"
-        style={{ backgroundImage: "url('/profile.png')" }}
-      >
-        <div className="flex flex-col items-center justify-center py-20 px-8">
-          {/* Seller Info */}
-          <div className="bg-gray-800 bg-opacity-90 p-8 rounded-lg shadow-lg max-w-4xl w-full mb-8">
-            <h1 className="text-3xl font-semibold text-white text-center mb-4">Welcome, Seller</h1>
-            <p className="text-lg text-white text-center mb-4">
-              Manage your store, add items for sale, and view your current inventory.
-            </p>
-          </div>
-
-          {/* Add Item Button */}
-          <div className="flex justify-center mb-8">
+          <nav className="space-y-4">
             <button
-              className="px-6 py-3 bg-teal-500 text-black font-semibold rounded-md hover:bg-teal-400 transition"
-              onClick={() => navigate("/additem")}
+              onClick={() => navigate("/dashboard")}
+              className="block w-full text-left hover:text-teal-400"
             >
-              Add New Item
+              Dashboard
             </button>
+
+            <button
+              onClick={() => navigate("/additem")}
+              className="block w-full text-left hover:text-teal-400"
+            >
+              Add Item
+            </button>
+
+            <button
+              onClick={() => navigate("/orders")}
+              className="block w-full text-left hover:text-teal-400"
+            >
+              Orders
+            </button>
+          </nav>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-400 transition"
+        >
+          Logout
+        </button>
+      </aside>
+
+      {/* ------------------ Main Content ------------------ */}
+      <main className="flex-1 flex flex-col">
+        {/* Top */}
+        <header className="bg-gray-800 p-4 shadow flex justify-between">
+          <h1 className="text-2xl font-semibold">Seller Dashboard</h1>
+          <p>Welcome, Seller</p>
+        </header>
+
+        {/* ------------------ Body ------------------ */}
+        <section className="flex-1 overflow-y-auto p-10">
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <StatCard
+              title="Total Items"
+              value={items.length}
+              color="text-teal-400"
+            />
+            <StatCard title="Total Orders" value={orders.length} />
+            <StatCard
+              title="Total Earnings"
+              value={`NPR ${orders.reduce((t, o) => t + o.totalAmount, 0)}`}
+              color="text-green-400"
+            />
           </div>
 
-          {/* Seller's Vault (Items) */}
-          <div className="bg-gray-800 bg-opacity-90 p-8 rounded-lg shadow-lg max-w-4xl w-full mb-8">
-            <h2 className="text-3xl font-semibold text-white text-center mb-8">
-              Your Vault (Items to be Sold)
-            </h2>
+          {/* Charts */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <ChartCard title="Orders Over Time">
+              <Line data={lineData} />
+            </ChartCard>
+            <ChartCard title="Item Prices">
+              <Bar data={barData} />
+            </ChartCard>
+            <ChartCard title="Payment Methods">
+              <Pie data={pieData} />
+            </ChartCard>
+          </div>
+
+          {/* Items */}
+          <div className="mb-10">
+            <h2 className="text-2xl font-semibold mb-6">Your Vault (Items)</h2>
+
             {loadingItems ? (
-              <p className="text-center text-white">Loading items...</p>
+              <p>Loading items...</p>
             ) : error ? (
-              <p className="text-center text-red-500">{error}</p>
+              <p className="text-red-500">{error}</p>
             ) : items.length === 0 ? (
-              <p className="text-center text-white">No items found. Start adding some!</p>
+              <p>No items found. Start adding some!</p>
             ) : (
-              <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {items.map((item) => (
-                  <div
+                  <ItemCard
                     key={item._id}
-                    className="bg-gray-700 p-4 rounded-lg flex justify-between items-center"
-                  >
-                    <div>
-                      <h3 className="text-xl text-white">{item.name}</h3>
-                      <p className="text-sm text-gray-400">{item.description}</p>
-                      <p className="text-lg text-teal-400">NPR {item.price}</p>
-                    </div>
-                    <div className="flex space-x-4">
-                      <button
-                        className="px-4 py-2 bg-teal-500 text-black font-semibold rounded-md hover:bg-teal-400 transition"
-                        onClick={() => handleEditItem(item._id)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="px-4 py-2 bg-red-500 text-white font-semibold rounded-md hover:bg-red-400 transition"
-                        onClick={() => handleRemoveItem(item._id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
+                    item={item}
+                    onEdit={handleEditItem}
+                    onRemove={handleRemoveItem}
+                  />
                 ))}
               </div>
             )}
           </div>
 
-          {/* Orders and Payments Received */}
-          <div className="bg-gray-800 bg-opacity-90 p-8 rounded-lg shadow-lg max-w-4xl w-full">
-            <h2 className="text-3xl font-semibold text-white text-center mb-8">
-              Your Orders & Payments
-            </h2>
+          {/* Orders */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Orders & Payments</h2>
+
             {loadingOrders ? (
-              <p className="text-center text-white">Loading orders...</p>
+              <p>Loading orders...</p>
             ) : error ? (
-              <p className="text-center text-red-500">{error}</p>
+              <p className="text-red-500">{error}</p>
             ) : orders.length === 0 ? (
-              <p className="text-center text-white">No orders found.</p>
+              <p>No orders found.</p>
             ) : (
               <div className="space-y-6">
                 {orders.map((order) => (
-                  <div key={order._id} className="bg-gray-700 p-4 rounded-lg">
-                    <h3 className="text-xl text-white">Order ID: {order._id}</h3>
-                    <p className="text-sm text-gray-400">Payment Method: {order.paymentMethod}</p>
-                    <p className="text-sm text-gray-400">Total Amount: NPR {order.totalAmount}</p>
-                    <p className="text-sm text-gray-400">Status: {order.orderStatus}</p>
-
-                    {/* Buyer's Details */}
-                    <div className="mt-4">
-                      <h4 className="text-lg text-white mb-2">Buyer Details:</h4>
-                      <p className="text-sm text-gray-400">Name: {order.buyer?.username}</p>
-                      <p className="text-sm text-gray-400">Email: {order.buyer?.email}</p>
-                      <p className="text-sm text-gray-400">Phone: {order.buyer?.phone}</p>
-                      <p className="text-sm text-gray-400">Location: {order.buyer?.deliverylocation}</p>
-                    </div>
-
-                    {/* Items in this Order */}
-                    <div className="mt-4">
-                      <h4 className="text-lg text-white">Items in this Order:</h4>
-                      <ul>
-                        {order.items.map((item) => (
-                          <li key={item._id} className="text-white">
-                            <p>{item.product?.name} - {item.quantity} x NPR {item.price}</p>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
+                  <OrderCard key={order._id} order={order} />
                 ))}
               </div>
             )}
           </div>
-        </div>
-      </main>
+        </section>
 
-      {/* Footer */}
-      <Footer />
+        <Footer />
+      </main>
+    </div>
+  );
+}
+
+/* -----------------------------------------
+   COMPONENTS (Cleaner & Reusable)
+----------------------------------------- */
+
+function StatCard({ title, value, color = "" }) {
+  return (
+    <div className="bg-gray-700 p-6 rounded-2xl shadow-lg">
+      <h3 className="text-gray-400">{title}</h3>
+      <p className={`text-3xl font-bold ${color}`}>{value}</p>
+    </div>
+  );
+}
+
+function ChartCard({ title, children }) {
+  return (
+    <div className="bg-gray-700 p-6 rounded-2xl shadow-lg">
+      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function ItemCard({ item, onEdit, onRemove }) {
+  return (
+    <div className="bg-gray-700 p-6 rounded-xl shadow-lg">
+      <h3 className="text-lg font-semibold">{item.name}</h3>
+      <p className="text-gray-400 text-sm">{item.description}</p>
+      <p className="text-teal-400 font-bold mt-2">NPR {item.price}</p>
+
+      <div className="flex gap-2 mt-4">
+        <button
+          onClick={() => onEdit(item._id)}
+          className="flex-1 bg-teal-500 text-black px-3 py-1 rounded-lg"
+        >
+          Edit
+        </button>
+
+        <button
+          onClick={() => onRemove(item._id)}
+          className="flex-1 bg-red-500 px-3 py-1 rounded-lg"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function OrderCard({ order }) {
+  return (
+    <div className="bg-gray-700 p-6 rounded-xl shadow-lg">
+      <div className="flex justify-between">
+        <h3 className="text-xl font-semibold">Order #{order._id}</h3>
+        <span className="px-3 py-1 bg-teal-500 text-black rounded-lg">
+          {order.orderStatus}
+        </span>
+      </div>
+
+      <p className="text-gray-400 mt-2">Payment: {order.paymentMethod}</p>
+      <p className="text-gray-400">Total: NPR {order.totalAmount}</p>
+
+      <h4 className="mt-4 font-semibold">Buyer:</h4>
+      <p className="text-gray-300 text-sm">
+        {order.buyer?.username} ({order.buyer?.email})
+      </p>
+
+      <p className="text-gray-300 text-sm">
+        Phone: {order.buyer?.phone}, Location: {order.buyer?.deliverylocation}
+      </p>
+
+      <h4 className="mt-4 font-semibold">Items:</h4>
+      <ul className="list-disc ml-5 text-gray-300">
+        {order.items.map((i) => (
+          <li key={i._id}>
+            {i.product?.name} × {i.quantity} (NPR {i.price})
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

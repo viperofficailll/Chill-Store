@@ -35,45 +35,54 @@ function ProductDetails() {
   }, [id]);
 
   const handleAddToCart = () => {
-    
-      setItemsInCart([...currentCartItems, id]);
-      setNoOfItemsInCart((prevCount) => prevCount + 1);
-      console.log(itemsincart)
-    
+    setItemsInCart([...currentCartItems, id]);
+    setNoOfItemsInCart((prevCount) => prevCount + 1);
+    console.log("Item added to cart:", id);
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <Navbar />
 
-      <main
-        className="flex-grow bg-cover bg-center"
-        style={{ backgroundImage: "url('/bg.png')" }}
-      >
-        <div className="flex flex-col items-center justify-center py-20">
-          {loading && <div className="text-white">Loading...</div>}
-          {error && <div className="text-white">{error}</div>}
-          {!loading && !error && product && (
-            <div className="bg-gray-800 rounded-lg shadow-lg p-6 text-white max-w-3xl w-full">
+      <main className="flex-grow flex items-center justify-center py-20 px-4">
+        {loading && <div className="text-gray-300 text-lg">Loading...</div>}
+        {error && <div className="text-red-500 text-lg">{error}</div>}
+
+        {!loading && !error && product && (
+          <div className="bg-gray-800 bg-opacity-90 backdrop-blur-md rounded-2xl shadow-2xl max-w-4xl w-full flex flex-col md:flex-row overflow-hidden transition-transform transform hover:scale-105">
+            {/* Product Image */}
+            <div className="md:w-1/2">
               <img
-                src={`http://localhost:4000/${product.image.replace(/\\/g, "/")}`}
+                src={`http://localhost:4000/${product.image.replace(
+                  /\\/g,
+                  "/"
+                )}`}
                 alt={product.name}
-                className="w-full h-64 object-cover rounded-lg mb-6"
+                className="w-full h-80 object-cover md:h-full hover:scale-105 transition-transform duration-300"
               />
-              <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-              <p className="text-gray-400 mb-4">{product.description}</p>
-              <div className="text-lg font-semibold mb-6">
-                Price: NPR. {product.price}
+            </div>
+
+            {/* Product Info */}
+            <div className="md:w-1/2 p-8 flex flex-col justify-between">
+              <div>
+                <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+                <p className="text-gray-400 mb-6 line-clamp-5">
+                  {product.description}
+                </p>
+                <span className="inline-block mb-6 px-4 py-2 bg-gradient-to-r from-teal-400 to-blue-500 text-black font-bold rounded-full text-lg">
+                  NPR {product.price.toFixed(2)}
+                </span>
               </div>
+
               <button
                 onClick={handleAddToCart}
-                className="bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                className="bg-teal-500 text-black font-semibold rounded-lg px-6 py-3 hover:bg-teal-400 shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
               >
                 Add to Cart
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
 
       <Footer />

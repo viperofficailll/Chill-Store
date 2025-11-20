@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link } from "react-router-dom";
 import axios from "axios";
 import Navabar from "../components/Navabar";
 import Footer from "../components/Footer";
@@ -7,22 +7,20 @@ import Card from "../components/Card";
 
 function Home() {
   const [search, setSearch] = useState("");
-  const [products, setProducts] = useState([]); // Array to hold products
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch products from the API
+  // Fetch products from API
   useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true); // Start loading
-      setError(null); // Clear previous errors
+      setLoading(true);
+      setError(null);
       try {
         const response = await axios.get("/api/v1/buyer/allitems");
-        console.log("Fetched data:", response.data); // Log the response for debugging
 
-        // Handle products based on API response structure
         if (response.data.products && Array.isArray(response.data.products)) {
-          setProducts(response.data.products); // Assign products array
+          setProducts(response.data.products);
         } else {
           setError("Unexpected response format.");
           console.error("Unexpected response structure:", response.data);
@@ -31,71 +29,77 @@ function Home() {
         setError("Failed to load products.");
         console.error("Error fetching products:", err);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
 
     fetchProducts();
   }, []);
 
-  // Filter products based on the search query
-  const filteredProducts = products.filter((product) =>
-    product.name && product.name.toLowerCase().includes(search.toLowerCase())
+  // Filter products based on search
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name && product.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       {/* Navbar */}
       <Navabar />
 
       {/* Main Content */}
       <main
         className="flex-grow bg-cover bg-center"
-        style={{ backgroundImage: "url('/bg.png')" }}
+      
       >
-        <div className="flex flex-col items-center justify-center py-20">
+        <div className="flex flex-col items-center py-20 px-4">
           {/* Search Bar */}
-          <div className="mb-12 w-3/4 max-w-lg">
+          <div className="mb-16 w-full max-w-lg relative">
             <input
               type="text"
-              placeholder="Search here..."
+              placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full px-5 py-4 rounded-3xl bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-400 shadow-lg transition-all duration-300"
             />
           </div>
 
           {/* Loading and Error States */}
-          {loading && <div className="text-white">Loading...</div>}
-          {error && <div className="text-white">{error}</div>}
+          {loading && (
+            <div className="text-gray-300 text-lg">Loading products...</div>
+          )}
+          {error && <div className="text-red-500 text-lg">{error}</div>}
 
-          {/* Display Products */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl px-4">
+          {/* Products Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full max-w-7xl">
             {products.length > 0 ? (
               filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <Link
-                    to={`/productdetails/${product._id}`} // Link to ProductDetails page with product ID
-                    key={product._id} // Use _id as the unique key
+                    to={`/productdetails/${product._id}`}
+                    key={product._id}
+                    className="transform hover:scale-105 transition-transform duration-300"
                   >
                     <Card
                       title={product.name}
                       description={product.description}
                       price={product.price}
-                      image={`http://localhost:4000/${product.image.replace(/\\/g, "/")}`}
-
-
+                      image={`http://localhost:4000/${product.image.replace(
+                        /\\/g,
+                        "/"
+                      )}`}
+                      className="hover:shadow-2xl"
                     />
                   </Link>
                 ))
               ) : (
-                <div className="text-white text-center col-span-full">
+                <div className="text-gray-400 text-center col-span-full text-xl">
                   No results found.
                 </div>
               )
             ) : (
               !loading && (
-                <div className="text-white text-center col-span-full">
+                <div className="text-gray-400 text-center col-span-full text-xl">
                   No products available.
                 </div>
               )
